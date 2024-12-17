@@ -79,7 +79,7 @@ public class TimedLocalForwardMovement : MonoBehaviour
 
     void DetectAttractiveTarget()
     {
-        if (immuneToAttraction) return; // 如果处于免疫时段，直接返回
+        if (immuneToAttraction) return; // Return during immune time 
 
         Collider[] colliders = Physics.OverlapSphere(transform.position, attractionRadius);
         foreach (Collider collider in colliders)
@@ -105,14 +105,14 @@ public class TimedLocalForwardMovement : MonoBehaviour
 
         Vector3 direction = (attractionTarget.position - transform.position).normalized;
 
-        AdjustDirectionIfObstacle(ref direction); // 调整方向以避开障碍物
-
+        AdjustDirectionIfObstacle(ref direction); // Adjust the direction to avoid obstacles
+        
         Vector3 newPosition = transform.position + direction * moveSpeed * Time.deltaTime;
         newPosition.y = initialYPosition;
 
         if (!IsOtherChickenAtPosition(newPosition))
         {
-            transform.position = newPosition; // 直接修改 transform.position
+            transform.position = newPosition; 
         }
 
         SmoothRotate(direction);
@@ -136,14 +136,14 @@ public class TimedLocalForwardMovement : MonoBehaviour
 
         Vector3 direction = (targetPosition - transform.position).normalized;
 
-        AdjustDirectionIfObstacle(ref direction); // 调整方向以避开障碍物
+        AdjustDirectionIfObstacle(ref direction); 
 
         Vector3 newPosition = transform.position + direction * moveSpeed * Time.deltaTime;
         newPosition.y = initialYPosition;
 
         if (!IsOtherChickenAtPosition(newPosition))
         {
-            transform.position = newPosition; // 直接修改 transform.position
+            transform.position = newPosition; 
         }
 
         SmoothRotate(direction);
@@ -154,14 +154,14 @@ public class TimedLocalForwardMovement : MonoBehaviour
         isMoving = true;
         Vector3 directionAwayFromPlayer = (transform.position - player.position).normalized;
 
-        AdjustDirectionIfObstacle(ref directionAwayFromPlayer); // 调整方向以避开障碍物
+        AdjustDirectionIfObstacle(ref directionAwayFromPlayer); 
 
         Vector3 escapePosition = transform.position + directionAwayFromPlayer * maxEscapeSpeed * Time.deltaTime;
         escapePosition.y = initialYPosition;
 
         if (!IsOtherChickenAtPosition(escapePosition))
         {
-            transform.position = escapePosition; // 直接修改 transform.position
+            transform.position = escapePosition; 
         }
 
         SmoothRotate(directionAwayFromPlayer);
@@ -169,23 +169,23 @@ public class TimedLocalForwardMovement : MonoBehaviour
 
     void AdjustDirectionIfObstacle(ref Vector3 direction)
     {
-        float angleStep = 15f; // 每次调整的角度
-        int maxChecks = 12; // 最大检查次数 (180° / 15°)
+        float angleStep = 15f; // Angles each time adjust
+        int maxChecks = 12; // Maximum check times (180掳 / 15掳)
 
         for (int i = 0; i < maxChecks; i++)
         {
-            // 检查当前方向是否有障碍物或其他小鸡
+            //  Check any obstacles or chickens in the current direction
             if (!Physics.Raycast(transform.position + Vector3.up * 0.1f, direction, rayDistance, obstacleLayer) &&
                 !IsOtherChickenInDirection(direction))
             {
-                return; // 当前方向没有障碍物或其他小鸡，保持原方向
+                return; // If not, keep the original direction 
             }
 
-            // 如果当前方向有障碍物或其他小鸡，顺时针或逆时针调整方向
+            // If there are obstacles/Chickens, adjust the angles.
             direction = Quaternion.Euler(0, angleStep, 0) * direction;
         }
 
-        // 如果所有方向都被阻挡，则保持原方向（最坏情况）
+        // If all directions are blocked, keep the original direction.
     }
 
     bool IsOtherChickenInDirection(Vector3 direction)
@@ -195,7 +195,7 @@ public class TimedLocalForwardMovement : MonoBehaviour
         {
             if (hit.collider.CompareTag("Chicken"))
             {
-                return true; // 检测到其他小鸡
+                return true; // Other chickens detected
             }
         }
         return false;
@@ -203,12 +203,12 @@ public class TimedLocalForwardMovement : MonoBehaviour
 
     bool IsOtherChickenAtPosition(Vector3 position)
     {
-        Collider[] colliders = Physics.OverlapSphere(position, 0.5f); // 检查目标位置周围0.5米范围内是否有其他小鸡
+        Collider[] colliders = Physics.OverlapSphere(position, 0.5f); // Check if any other chickens around target position 
         foreach (Collider collider in colliders)
         {
             if (collider.CompareTag("Chicken") && collider.transform != transform)
             {
-                return true; // 检测到其他小鸡
+                return true; // Other chickens detected
             }
         }
         return false;
